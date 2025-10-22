@@ -1,0 +1,45 @@
+﻿pipeline {
+    agent any
+
+    stages {
+
+        stage('Clonar código') {
+            steps {
+                echo 'Clonando el repositorio...'
+                git branch: 'main', url: 'https://github.com/yurinscoaquira/PDS-Sis.git'
+            }
+        }
+
+        stage('Instalar dependencias') {
+            steps {
+                echo 'Instalando dependencias de PHP y Node...'
+                bat 'composer install'
+                bat 'npm install'
+            }
+        }
+
+        stage('Ejecutar pruebas unitarias') {
+            steps {
+                echo 'Ejecutando pruebas unitarias...'
+                bat 'php artisan test'
+            }
+        }
+
+        stage('Análisis con SonarQube') {
+            environment {
+                SONAR_HOST_URL = 'http://host.docker.internal:9000'
+                SONAR_LOGIN = 'squ_76cb6597784d460bee6c89b447f2195af02d2229'
+            }
+            steps {
+                echo 'Ejecutando análisis de SonarQube...'
+                bat '''
+                docker run --rm ^
+                    -e SONAR_HOST_URL=%SONAR_HOST_URL% ^
+                    -v "%cd%":/usr/src ^
+                    sonarsource/sonar-scanner-cli ^
+                    -Dsonar.login=%SONAR_LOGIN%
+                '''
+            }
+        }
+    }
+}

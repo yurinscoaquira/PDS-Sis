@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Compilando proyecto...'
+                // Aquí puedes agregar tus comandos reales:
+                // sh 'composer install'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Ejecutando pruebas...'
+                // sh 'phpunit'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Desplegando proyecto...'
+                // sh 'docker build -t miapp .'
+            }
+        }
+    }
+}
